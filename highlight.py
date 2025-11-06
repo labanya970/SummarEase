@@ -3,7 +3,7 @@ import spacy
 import string
 from nltk.util import ngrams
 from sklearn.feature_extraction.text import TfidfVectorizer
-import re
+
 
 nltk.download("punkt")
 nltk.download("stopwords")
@@ -24,7 +24,7 @@ COMMON_WORDS = {
 }
 
 def extract_keywords(text, top_n=10):
-    sentences = nltk.sent_tokenize(text)
+
     words = nltk.word_tokenize(text.lower())
     stopwords = set(nltk.corpus.stopwords.words("english"))
 
@@ -48,7 +48,7 @@ def extract_keywords(text, top_n=10):
     noun_chunks = {chunk.text.lower() for chunk in doc.noun_chunks}
 
     vectorizer_single = TfidfVectorizer(stop_words="english", ngram_range=(1, 1), max_features=10)
-    tfidf_matrix_single = vectorizer_single.fit_transform([text])
+    vectorizer_single.fit_transform([text])
     tfidf_keywords = set(vectorizer_single.get_feature_names_out())
 
     tagged_words = nltk.pos_tag(words)
@@ -60,7 +60,7 @@ def extract_keywords(text, top_n=10):
     filtered_key_points = remove_similar_phrases(list(key_points), top_n)
     relevant_sentences = extract_sentences_with_keywords(text, filtered_key_points)
 
-    return sorted(filtered_key_points, key=lambda x: len(x), reverse=True)[:top_n], relevant_sentences
+    return sorted(filtered_key_points, key=lambda x: len(x), reverse=True)[:top_n], set(relevant_sentences)
 
 def remove_similar_phrases(phrases, top_n=10, similarity_threshold=0.5):
     from sklearn.metrics.pairwise import cosine_similarity
